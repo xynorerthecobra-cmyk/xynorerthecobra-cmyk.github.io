@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;0,900;1,600&family=Quicksand:wght@400;600;700&family=Comfortaa:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   🎂 FILL-IN GUIDE
+   1) SONG → CONFIG.songUrl (direct audio link) — if it can't be
+      played directly, a "Play on LimeWire" button + an instant
+      built-in Birthday Melody are shown as backup.
+   2) PHOTOS → marked with "📸 PHOTO". ALL main spots are YOUR photos ✅:
+      ✅ PHOTO 1     → cover + PHOTO 5–9 memory polaroids
+      ✅ PHOTO 15–24 → heart collage (slide 5)
+      📷 still demo  → vinyl photos (CONFIG.vinylPhotos) + 2 tiny
+                       polaroids on the song page
+   3) LETTER TEXT → search "✏️ LETTER".
+   ============================================================ */
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Quicksand',sans-serif;color:#4a443c;overflow:hidden;background:#f7f2e0}
+button{font-family:inherit;cursor:pointer}
+img{display:block}
+
+/* ---------- shared ---------- */
+.script{font-family:'Great Vibes',cursive;font-weight:400}
+.wrap{width:min(560px,94vw);margin:auto 0;text-align:center;position:relative;z-index:2}
+.polaroid{background:#fff;padding:8px 8px 22px;border-radius:4px;box-shadow:0 14px 26px rgba(0,0,0,.32);position:relative}
+.polaroid img{width:148px;height:148px;object-fit:cover;border-radius:2px}
+.polaroid::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-3deg);width:66px;height:20px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.25)}
+.face-fit img{object-fit:contain;background:#fff}
+
+/* ---------- slides ---------- */
+.slide{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;z-index:1;
+  transform:translateY(26px) scale(.985);transition:opacity .7s ease,transform .7s ease;
+  display:flex;flex-direction:column;align-items:center;padding:34px 14px 70px}
+.slide.active{opacity:1;pointer-events:auto;transform:none;z-index:3}
+
+/* ============================================================
+   1) COVER — scrapbook image (full, no crop) + CSS-art fallback
+   ============================================================ */
+.s-cover{background:#faf1dc;background-image:radial-gradient(#eadfc2 1.4px,transparent 1.4px);background-size:26px 26px}
+.balloon{position:absolute;z-index:1;font-size:30px;opacity:.75;animation:sway 5s ease-in-out infinite;pointer-events:none}
+.balloon.b1{top:7%;left:5%}
+.balloon.b2{top:10%;right:5%;animation-delay:1.4s}
+.balloon.b3{top:50%;left:3%;font-size:23px;animation-delay:.7s;opacity:.6}
+@keyframes sway{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+
+.cover-card{width:min(400px,86vw);margin:0 auto;cursor:pointer}
+.cover-card img{width:100%;height:auto;border-radius:18px;box-shadow:0 22px 40px rgba(120,90,60,.28)}
+.cover-hint{margin-top:12px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:#b0836b;animation:pulse 1.6s infinite}
+
+.cover-scene{position:relative;width:min(340px,84vw);margin:0 auto;cursor:pointer;padding:46px 0 12px}
+.c-sticker{position:relative;width:60%;margin:0 auto;background:#fff;border-radius:26px;padding:9px;
+  box-shadow:0 18px 32px rgba(120,90,60,.26);transform:rotate(-2deg);z-index:2}
+.c-sticker img{width:100%;aspect-ratio:3/3.5;object-fit:cover;border-radius:17px}
+.c-hat{position:absolute;top:-42px;left:50%;transform:translateX(-52%) rotate(10deg);z-index:3}
+.c-hat .hatwrap{position:relative;
+  filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 -2px 0 #fff)
+         drop-shadow(0 2px 0 #fff) drop-shadow(0 6px 8px rgba(120,90,60,.3))}
+.c-hat .cone{width:46px;height:60px;
+  background:repeating-linear-gradient(105deg,#f5aec7 0 9px,#9ccbe8 9px 18px);
+  clip-path:polygon(50% 0,100% 100%,0 100%)}
+.c-hat .pom{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:15px;height:15px;
+  border-radius:50%;background:#f5aec7;box-shadow:inset -2px -2px 0 rgba(0,0,0,.08)}
+.c-num{position:absolute;z-index:1;width:27%;filter:drop-shadow(0 5px 8px rgba(60,75,115,.35))}
+.c-num svg{width:100%;height:auto;display:block}
+.n1{left:-2%;top:28%;transform:rotate(-7deg)}
+.n5{right:-2%;top:37%;transform:rotate(6deg)}
+.c-cake{position:absolute;left:4%;bottom:-8px;width:66px;z-index:3;transform:rotate(-7deg);
+  filter:drop-shadow(0 4px 6px rgba(120,90,60,.25))}
+.c-cake .cc-c{display:flex;justify-content:center;gap:8px;margin-bottom:-2px}
+.c-cake .cc-c i{width:5px;height:15px;border-radius:2px;position:relative;
+  background:repeating-linear-gradient(45deg,#fff 0 3px,#f48fb1 3px 6px)}
+.c-cake .cc-c i::after{content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  width:6px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(#fff7ae,#ffb300 75%);box-shadow:0 0 8px 2px rgba(255,196,60,.7);
+  animation:flick .45s infinite alternate}
+@keyframes flick{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(.8,.88)}}
+.c-cake .cc-top{height:15px;background:#fdf6e3;border:1px solid #eadfc2;border-radius:9px 9px 4px 4px;
+  position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.05)}
+.c-cake .cc-top::before{content:"";position:absolute;top:4px;left:12px;width:7px;height:7px;border-radius:50%;
+  background:#e25c5c;box-shadow:20px 1px 0 #e25c5c,38px 0 0 #e25c5c}
+.c-cake .cc-base{height:21px;background:linear-gradient(#a5714f,#8a5a3b);border-radius:0 0 9px 9px}
+.cover-script{font-family:'Great Vibes',cursive;font-size:clamp(42px,11vw,58px);color:#6f4b33;margin-top:16px;line-height:1.15}
+.cover-script .hh{color:#e2928f;font-size:.5em;vertical-align:.35em}
+.c-open{margin-top:14px;padding:13px 36px;border:none;border-radius:30px;background:#cf7d86;color:#fff;
+  font-weight:700;letter-spacing:3px;font-size:14px;position:relative;
+  box-shadow:0 10px 20px rgba(207,125,134,.45);animation:bob 2.2s ease-in-out infinite}
+.c-open::after{content:"";position:absolute;inset:4px;border:1.5px dashed rgba(255,255,255,.6);border-radius:24px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ---------- 2) ENVELOPE + LETTER ---------- */
+.s-env{background:radial-gradient(900px at 50% 12%,#6b4448,#4a2e31);color:#f3e9dc}
+.env-kicker{font-family:'Great Vibes',cursive;font-size:30px;color:#f0d9c8;margin-bottom:30px;position:relative;z-index:5}
+.env-layout{display:flex;gap:34px;align-items:center;justify-content:center;flex-wrap:wrap}
+.env-polas{position:relative;width:200px;height:300px;flex-shrink:0}
+.env-polas .polaroid{position:absolute}
+.ep1{top:0;left:8px;transform:rotate(-8deg)}
+.ep2{top:78px;left:34px;transform:rotate(4deg)}
+.ep3{top:158px;left:4px;transform:rotate(-3deg)}
+.env-right{display:flex;flex-direction:column;align-items:center}
+.e2-scene{position:relative;width:min(300px,78vw);aspect-ratio:4/3;cursor:pointer;
+  filter:drop-shadow(0 22px 34px rgba(0,0,0,.45))}
+.e2-arch{position:absolute;left:6%;right:6%;top:-24%;bottom:30%;z-index:0;
+  background:repeating-radial-gradient(circle at 50% 130%,rgba(255,255,255,.22) 0 6px,transparent 6px 15px),
+             linear-gradient(#fbe0ec,#f0bad2);
+  border-radius:50% 50% 10px 10px/40% 40% 10px 10px;
+  outline:2px dotted rgba(214,120,160,.55);outline-offset:-9px}
+.e2-arch::after{content:"";position:absolute;left:2px;right:2px;bottom:-9px;height:20px;
+  background:radial-gradient(circle at 10px 0,#f0bad2 9px,transparent 10px);background-size:20px 20px;background-repeat:repeat-x}
+.e2-glow{position:absolute;left:6%;right:6%;bottom:24%;height:78%;z-index:1;opacity:0;transition:opacity 1.2s .3s;
+  background:radial-gradient(ellipse at 50% 72%,rgba(255,214,130,.6),rgba(255,214,130,0) 70%)}
+.e2-scene.bloomed .e2-glow{opacity:1}
+.tulips{position:absolute;left:4%;right:4%;bottom:33%;height:0;z-index:2}
+.tulip{position:absolute;bottom:0;left:var(--x);width:34px;transform-origin:bottom center;
+  transform:translateX(-50%) rotate(var(--r)) scale(0);
+  transition:transform 1s cubic-bezier(.34,1.56,.64,1) var(--d)}
+.e2-scene.bloomed .tulip{transform:translateX(-50%) rotate(var(--r)) scale(1)}
+.t-stem{width:4px;height:var(--h);margin:0 auto;background:linear-gradient(#a5d096,#79ab68);border-radius:4px;position:relative}
+.t-stem::before{content:"";position:absolute;left:-10px;bottom:16px;width:13px;height:7px;background:#8dbd7e;border-radius:0 100% 0 100%;transform:rotate(-16deg)}
+.t-head{width:30px;height:32px;margin:0 auto -6px;position:relative;z-index:2;transform:scale(var(--s,1));transform-origin:bottom center}
+.t-head::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,#f7a8c4,#e8659a);border-radius:50% 50% 46% 46%/70% 70% 26% 26%}
+.t-head::after{content:"";position:absolute;left:50%;top:12%;transform:translateX(-50%);width:12px;height:72%;background:linear-gradient(#ee7ba7,#dd5488);border-radius:50% 50% 40% 40%}
+.e2-front{position:absolute;left:0;right:0;bottom:0;height:56%;z-index:3;
+  background:repeating-radial-gradient(circle at 20% 140%,rgba(255,255,255,.28) 0 5px,transparent 5px 13px),
+             linear-gradient(#fbdde9,#f3c0d6);
+  border-radius:14px 14px 12px 12px;clip-path:ellipse(78% 105% at 50% 105%)}
+.e2-seal{position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);z-index:4;width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(#fdf6f0,#e8b7c9);display:grid;place-items:center;font-size:16px;
+  box-shadow:0 4px 10px rgba(0,0,0,.25);transition:all .5s}
+.e2-scene.bloomed .e2-seal{opacity:0;transform:translate(-50%,-50%) scale(1.7)}
+.env-hint{margin-top:24px;font-size:14px;font-weight:600;color:#f0d9c8;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
+.petal{position:absolute;font-size:20px;opacity:.5;animation:floaty 7s linear infinite;z-index:1}
+.petal.p1{left:8%;top:70%}.petal.p2{left:88%;top:24%;animation-delay:2s}.petal.p3{left:80%;top:80%;animation-delay:4s}
+@keyframes floaty{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-70vh) rotate(300deg);opacity:0}}
+.letter-zone{opacity:0;transform:translateY(30px);transition:all .9s ease .1s;pointer-events:none;margin-top:34px}
+.letter-zone.revealed{opacity:1;transform:none;pointer-events:auto}
+.turn-line{font-family:'Great Vibes',cursive;font-size:clamp(36px,9vw,50px);color:#f6e3c8;margin-bottom:18px}
+.turn-line b{color:#e8b04b;font-family:'Playfair Display',serif;font-size:1.15em}
+.letter-card{background:#f6efdf;color:#5a4438;width:min(520px,92vw);border-radius:14px;padding:30px 26px;
+  box-shadow:0 22px 44px rgba(0,0,0,.35);text-align:left}
+.letter-card h3{font-family:'Great Vibes',cursive;font-size:clamp(24px,6.5vw,30px);color:#b0604f;
+  text-align:center;margin-bottom:18px;opacity:0;line-height:1.4}
+.letter-card p{font-family:'Comfortaa',cursive;font-weight:500;line-height:1.95;font-size:14px;margin-bottom:14px;opacity:0}
+.letter-zone.revealed .letter-card h3{animation:fadeUp .8s .05s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(1){animation:fadeUp .8s .25s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(2){animation:fadeUp .8s .65s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(3){animation:fadeUp .8s 1.05s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(4){animation:fadeUp .8s 1.45s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(5){animation:fadeUp .8s 1.85s forwards}
+.letter-zone.revealed .letter-card p:nth-of-type(6){animation:fadeUp .8s 2.25s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sign{font-family:'Great Vibes',cursive;font-size:26px;color:#b0604f;text-align:right;margin-top:6px}
+.next-btn{margin-top:26px;padding:12px 30px;border:none;border-radius:30px;background:#c96f6f;color:#fff;
+  font-weight:700;font-size:14.5px;box-shadow:0 10px 22px rgba(0,0,0,.3);transition:transform .2s}
+.next-btn:hover{transform:translateY(-3px)}
+
+/* ============================================================
+   3) A GLIMPSE OF YOU — pure CSS camera + memory polaroids
+   ============================================================ */
+.s-mem{background:#f4eddf;background-image:radial-gradient(#e7dcc3 1.4px,transparent 1.4px);background-size:26px 26px}
+.glimpse-title{margin-bottom:8px}
+.glimpse-title .script{display:block;font-size:clamp(34px,8vw,48px);color:#b0604f}
+.glimpse-title b{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(40px,10vw,58px);color:#4a443c}
+
+.camera{width:min(310px,84vw);margin:30px auto 4px;cursor:pointer;position:relative;
+  filter:drop-shadow(0 18px 30px rgba(90,70,50,.32))}
+.camera.snapped{animation:wiggle .5s}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-2.6deg)}60%{transform:rotate(2.2deg)}}
+.cam-top{position:relative;height:46px;margin:0 9%}
+.cam-hump{position:absolute;left:0;right:0;top:10px;height:36px;
+  background:linear-gradient(145deg,#eceadf,#c0bcae);border:1px solid #aca697;border-bottom:none;
+  border-radius:16px 16px 0 0}
+.cam-view{position:absolute;left:50%;top:0;transform:translateX(-50%);width:70px;height:28px;
+  background:#2c2a27;border-radius:9px 9px 0 0;box-shadow:inset 0 3px 6px rgba(0,0,0,.55)}
+.cam-view::after{content:"";position:absolute;inset:6px 10px;background:linear-gradient(#8fb4d3,#43698a);border-radius:5px}
+.cam-shutter{position:absolute;right:9%;top:0;width:28px;height:15px;border-radius:8px 8px 0 0;
+  background:#d9a441;box-shadow:inset 0 -3px 0 rgba(0,0,0,.16)}
+.cam-reel{position:absolute;left:7%;top:20px;width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#f2efe6,#8f887b)}
+.cam-body{position:relative;background:linear-gradient(145deg,#efede4,#c9c6bf);border:1px solid #b5b1a8;
+  border-radius:22px;padding:30px 24px;display:flex;align-items:center;gap:22px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.65)}
+.cam-lens{position:relative;flex-shrink:0;width:152px;height:152px;border-radius:50%;
+  background:#ddd9ce;border:2px solid #b5b1a8;
+  box-shadow:0 10px 20px rgba(0,0,0,.28), inset 0 0 0 10px #cfcbc0}
+.cam-lens::before{content:"";position:absolute;inset:20px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#a9c4d8,#24404f 58%,#101d24);
+  box-shadow:inset 0 0 0 7px #1c1a18}
+.cam-lens::after{content:"";position:absolute;left:25%;top:15%;width:27%;height:16%;
+  background:rgba(255,255,255,.55);border-radius:50%;transform:rotate(-24deg)}
+.cam-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px}
+.cam-flashwin{width:46px;height:22px;border-radius:6px;background:linear-gradient(#fffbe8,#e8dfb8);
+  border:2px solid #b5b1a8;box-shadow:inset 0 2px 3px rgba(255,255,255,.7)}
+.cam-dial{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f2efe6,#8f887b);
+  box-shadow:inset 0 0 0 5px #c8c3b6}
+.cam-dots{display:flex;gap:9px}
+.cam-dots i{width:9px;height:9px;border-radius:50%;background:#8f887b}
+.cam-screw{position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#f2efe6,#8f887b)}
+.cam-screw.s1{left:10px;top:10px}.cam-screw.s2{right:10px;top:10px}
+.cam-screw.s3{left:10px;bottom:10px}.cam-screw.s4{right:10px;bottom:10px}
+.cam-label{text-align:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b857a;margin-top:10px}
+
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:90}
+#flash.go{animation:flashA .55s ease-out}
+@keyframes flashA{0%{opacity:0}12%{opacity:.95}100%{opacity:0}}
+
+/* memory polaroids — responsive sizes so they always fit nicely */
+.mem-row{display:flex;gap:18px;overflow-x:auto;padding:22px 10px;width:min(620px,94vw);scroll-snap-type:x mandatory}
+.mem-row .polaroid{flex:0 0 auto;scroll-snap-align:center}
+.mem-row .polaroid img{width:clamp(128px,36vw,164px);height:clamp(128px,36vw,164px)}
+.mem-row .polaroid:nth-child(odd){transform:rotate(-3.5deg)}
+.mem-row .polaroid:nth-child(even){transform:rotate(3deg)}
+.mem-row figcaption{font-family:'Comfortaa',cursive;font-weight:700;font-size:12.5px;color:#b0604f;text-align:center;margin-top:8px}
+.mem-text{font-family:'Comfortaa',cursive;font-weight:500;font-style:italic;font-size:15px;line-height:1.9;
+  width:min(460px,90vw);background:rgba(255,255,255,.7);border-radius:14px;padding:20px 22px;color:#6a5546}
+.mem-text em{color:#b0604f;font-style:normal;font-weight:700}
+.btn-rose{background:#e29aae}
+
+/* ============================================================
+   4) A SONG FOR YOU — hybrid player
+   ============================================================ */
+.s-song{background:linear-gradient(90deg,#f3edda 0 54%,#3a2620 54.2% 100%)}
+.sd-red{position:absolute;right:0;bottom:0;width:46%;height:36%;z-index:0;
+  background:linear-gradient(160deg,#5a2b26,#33150f)}
+.song-deco{position:absolute;border-radius:50%;z-index:0;pointer-events:none;
+  background:repeating-radial-gradient(circle,#171512 0 3px,#26231f 3px 6px);
+  box-shadow:0 12px 26px rgba(0,0,0,.35)}
+.sd-vinyl1{width:44vw;max-width:240px;aspect-ratio:1;left:-15vw;top:3%;transform:rotate(9deg)}
+.sd-vinyl1::after{content:"";position:absolute;inset:30%;border-radius:50%;background:radial-gradient(circle,#8a5c3b,#5f3a1f)}
+.sd-vinyl2{width:34vw;max-width:190px;aspect-ratio:1;left:-11vw;top:47%}
+.sd-vinyl2::after{content:"";position:absolute;inset:29%;border-radius:50%;background:radial-gradient(circle,#c99a6a,#9a6c3e)}
+.flower{position:absolute;z-index:0;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.fl-red{right:-14px;top:56%;width:92px;transform:rotate(14deg)}
+.song-kicker{font-family:'Great Vibes',cursive;font-size:clamp(36px,9vw,52px);color:#f0d9c8;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);margin-bottom:2px}
+.song-sub{font-size:13.5px;font-weight:600;letter-spacing:.5px;color:#6b5a4a;margin-bottom:16px}
+.yt-wrap{position:relative;width:min(420px,90%);z-index:2}
+.song-card{position:relative;width:100%;aspect-ratio:1/1;border-radius:14px;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#4a3b30,#241c17);cursor:pointer;
+  border:3px solid rgba(255,255,255,.85);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.song-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.94}
+.song-fallback{position:absolute;inset:0;display:none;place-items:center;font-size:64px;color:#8a5c3b}
+.song-title-overlay{position:absolute;left:0;right:0;bottom:26px;z-index:2;color:#fff;
+  font-weight:700;font-size:14px;text-shadow:0 2px 8px rgba(0,0,0,.8);pointer-events:none}
+.song-progress{position:absolute;left:0;right:0;bottom:0;height:7px;background:rgba(255,255,255,.25);z-index:4}
+#songBar{height:100%;width:0%;background:#e62117;transition:width .25s linear}
+.yt-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:56px;
+  border:none;border-radius:15px;background:#e62117;color:#fff;font-size:26px;z-index:3;
+  box-shadow:0 10px 24px rgba(0,0,0,.5);display:grid;place-items:center;transition:transform .2s}
+.yt-play:hover{transform:translate(-50%,-50%) scale(1.08)}
+.yt-hint{position:absolute;top:10px;left:0;right:0;z-index:3;color:#fff;font-size:11px;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;pointer-events:none}
+.song-note{display:block;margin-top:10px;font-size:12.5px;font-weight:700;color:#d9a441}
+.song-note a{color:#d9a441}
+.fl-white{width:74px;left:-20px;top:-22px;z-index:6;transform:rotate(-12deg)}
+.star{position:absolute;width:36px;height:36px;z-index:6;pointer-events:none;animation:twinkle 2.4s ease-in-out infinite}
+.star::before,.star::after{content:"";position:absolute;left:50%;top:50%;background:#fff;border-radius:4px;box-shadow:0 0 10px 3px rgba(255,255,255,.7)}
+.star::before{width:100%;height:3px;transform:translate(-50%,-50%)}
+.star::after{width:3px;height:100%;transform:translate(-50%,-50%)}
+.star.st1{top:-16px;right:-12px}
+.star.st2{top:10px;right:-26px;width:20px;height:20px;animation-delay:1.2s}
+@keyframes twinkle{0%,100%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:.45;transform:scale(.72) rotate(18deg)}}
+.tt-wrap{position:relative;width:min(560px,100%);display:flex;justify-content:center;padding:20px 0 10px;z-index:2}
+.plaid{position:absolute;left:5%;bottom:14px;width:118px;height:138px;transform:rotate(-8deg);z-index:0;
+  border:2px solid rgba(255,255,255,.55);border-radius:3px;
+  background:repeating-linear-gradient(0deg,rgba(196,74,74,.75) 0 9px,transparent 9px 18px),
+             repeating-linear-gradient(90deg,rgba(196,74,74,.75) 0 9px,transparent 9px 18px),#f3ede0;
+  box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.turntable{position:relative;z-index:2;cursor:pointer}
+.tt-body{position:relative;width:236px;height:196px;border-radius:14px;border:1px solid #9d968a;
+  background:linear-gradient(145deg,#eceadf,#b6b0a2);box-shadow:0 18px 34px rgba(0,0,0,.45)}
+.tt-body::before,.tt-body::after{content:"";position:absolute;width:11px;height:11px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#f2efe6,#8f887b)}
+.tt-body::before{top:8px;left:10px}
+.platter{position:absolute;left:14px;top:15px;width:164px;height:164px}
+.vinyl{position:absolute;inset:0;border-radius:50%;overflow:hidden;
+  background:repeating-radial-gradient(circle at 50% 50%,#191817 0 2.5px,#262421 2.5px 5px);
+  box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.vphoto{position:absolute;inset:4%;width:92%;height:92%;border-radius:50%;object-fit:cover;
+  opacity:0;transition:opacity .8s ease;z-index:1}
+.vphoto.show{opacity:.96}
+.vinyl::after{content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;
+  background:repeating-radial-gradient(circle at 50% 50%,rgba(0,0,0,.2) 0 2px,transparent 2px 5px)}
+.spindle{position:absolute;left:50%;top:50%;width:13px;height:13px;border-radius:50%;background:#efe9dc;
+  transform:translate(-50%,-50%);box-shadow:0 0 0 2px rgba(0,0,0,.3);z-index:3}
+.vinyl.spin{animation:spin 3.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tonearm{position:absolute;top:16px;right:16px;width:12px;height:108px;border-radius:7px;z-index:4;
+  background:linear-gradient(#d8d2c4,#a49c8d);transform-origin:top center;transform:rotate(26deg);transition:transform 1s}
+.tonearm::before{content:"";position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:#cfc8b8;box-shadow:inset 0 0 0 3px #b3ab99}
+.tonearm::after{content:"";position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:14px;height:20px;border-radius:4px;background:#8d8471}
+.tonearm.on{transform:rotate(3deg)}
+.tt-slider{position:absolute;right:22px;top:46px;width:6px;height:86px;border-radius:4px;background:linear-gradient(#b7b0a2,#8d8679)}
+.tt-knob{position:absolute;width:13px;height:13px;border-radius:50%;background:#8f887b;box-shadow:inset 0 2px 3px rgba(255,255,255,.4)}
+.k1{left:34px;bottom:12px}.k2{left:58px;bottom:12px}.k3{right:52px;bottom:12px}
+.now-spinning{margin-top:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b857a;text-align:center}
+.side-polas{position:absolute;right:1%;bottom:8px;z-index:1}
+.spolar{position:absolute;right:0;bottom:0;background:#fff;padding:5px 5px 14px;border-radius:3px;box-shadow:0 12px 22px rgba(0,0,0,.4)}
+.spolar img{width:76px;height:76px;object-fit:cover}
+.spolar.sp1{right:64px;bottom:34px;transform:rotate(-6deg)}
+.spolar.sp2{transform:rotate(6deg)}
+.last-part{margin-top:18px;padding:10px 26px;border:none;border-radius:12px;background:#f6efdf;color:#6b4448;
+  font-family:'Comfortaa',cursive;font-weight:700;font-size:14px;box-shadow:0 10px 22px rgba(0,0,0,.3);z-index:2;transition:transform .2s}
+.last-part:hover{transform:translateY(-3px)}
+
+/* ---------- 5) FINALE — REAL HEART SHAPE (10 cards) ---------- */
+.s-final{background:linear-gradient(165deg,#f7ded4,#fdf6ec)}
+.final-title{font-family:'Great Vibes',cursive;font-size:clamp(40px,10vw,60px);color:#b0604f;margin-bottom:6px}
+.heart-collage{position:relative;width:min(400px,92vw);aspect-ratio:400/480;margin:26px auto 6px}
+.heart-glow{position:absolute;left:6%;top:2%;width:88%;z-index:0;opacity:.32;filter:blur(10px);animation:beat 1.7s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}28%{transform:scale(1.055)}42%{transform:scale(.99)}58%{transform:scale(1.04)}}
+.hcard{position:absolute;width:29%;aspect-ratio:1/1.1;background:#fff;padding:5px 5px 11px;border-radius:4px;
+  box-shadow:0 10px 18px rgba(90,70,60,.3);opacity:0;z-index:2}
+.hcard img{width:100%;height:100%;object-fit:cover}
+.slide.active .hcard{animation:cardIn .6s both;animation-delay:calc(var(--i)*.13s)}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.75) rotate(var(--r,0deg))}
+  to{opacity:1;transform:translateY(0) scale(1) rotate(var(--r,0deg))}}
+.dip{position:absolute;left:50%;top:-6%;transform:translateX(-50%);font-size:30px;z-index:5;animation:pulse 1.8s infinite}
+.floaties span{position:absolute;bottom:-40px;font-size:22px;opacity:.45;animation:floatUp linear infinite;z-index:0}
+.floaties span:nth-child(1){left:6%;animation-duration:11s}
+.floaties span:nth-child(2){left:20%;animation-duration:14s;animation-delay:3s}
+.floaties span:nth-child(3){left:38%;animation-duration:10s;animation-delay:1s}
+.floaties span:nth-child(4){left:56%;animation-duration:13s;animation-delay:5s}
+.floaties span:nth-child(5){left:74%;animation-duration:12s;animation-delay:2s}
+.floaties span:nth-child(6){left:90%;animation-duration:15s;animation-delay:4s}
+@keyframes floatUp{to{transform:translateY(-110vh) rotate(360deg);opacity:0}}
+.final-note{font-family:'Comfortaa',cursive;font-weight:500;font-size:14px;line-height:1.9;width:min(460px,90vw);
+  background:rgba(255,255,255,.7);border-radius:14px;padding:18px 22px;color:#6a5546;margin-top:14px}
+.btn-ghost{margin-top:20px;padding:10px 26px;border:2px solid #b0604f;border-radius:30px;background:transparent;color:#b0604f;font-weight:700}
+.made{margin-top:22px;font-size:12.5px;color:#a08c74}
+
+/* ---------- fab / toast / confetti ---------- */
+.fab{position:fixed;bottom:20px;right:20px;z-index:60;width:50px;height:50px;border-radius:50%;border:none;
+  background:#e29aae;color:#fff;font-size:21px;box-shadow:0 8px 18px rgba(226,154,174,.55)}
+#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(16px);background:#4a443c;color:#fff;
+  padding:11px 20px;border-radius:30px;font-size:13.5px;opacity:0;transition:.4s;z-index:70;pointer-events:none;max-width:86vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:80}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SLIDE 1 · COVER (scrapbook image + CSS fallback) ════════════════ -->
+<section class="slide s-cover active">
+  <span class="balloon b1">🎈</span><span class="balloon b2">🎈</span><span class="balloon b3">🎈</span>
+  <div class="wrap">
+    <div class="cover-card" id="coverCard" title="tap to open">
+      <!-- ════════ 📸 PHOTO 1 — COVER ✅ ════════ -->
+      <img id="coverImg" src="https://user42725.na.imgto.link/public/20261009/edb5327f2d08ff845da338b5-1000176314.avif" alt="Happy Birthday card">
+      <p class="cover-hint">tap the card to open ♡</p>
+    </div>
+
+    <!-- FALLBACK: CSS-built scrapbook — auto-shown ONLY if the image fails to load -->
+    <div class="cover-scene" id="coverScene" style="display:none">
+      <span class="c-num n1">
+        <svg viewBox="0 0 90 120">
+          <defs><linearGradient id="denimL" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4a6695"/><stop offset="1" stop-color="#35496e"/>
+          </linearGradient></defs>
+          <text x="45" y="100" text-anchor="middle" font-family="'Playfair Display',serif" font-weight="900"
+            font-size="112" fill="url(#denimL)" stroke="#fbf5e8" stroke-width="7"
+            stroke-dasharray="7 5" paint-order="stroke">1</text>
+        </svg>
+      </span>
+      <div class="c-sticker">
+        <div class="c-hat"><div class="hatwrap"><div class="pom"></div><div class="cone"></div></div></div>
+        <img src="https://user42725.na.imgto.link/public/20261009/9b1845f72e9b59f0bc1f0670-1000176112.avif" alt="">
+      </div>
+      <span class="c-num n5">
+        <svg viewBox="0 0 90 120">
+          <defs><linearGradient id="denimR" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4a6695"/><stop offset="1" stop-color="#35496e"/>
+          </linearGradient></defs>
+          <text x="45" y="100" text-anchor="middle" font-family="'Playfair Display',serif" font-weight="900"
+            font-size="112" fill="url(#denimR)" stroke="#fbf5e8" stroke-width="7"
+            stroke-dasharray="7 5" paint-order="stroke">5</text>
+        </svg>
+      </span>
+      <div class="c-cake">
+        <div class="cc-c"><i></i><i></i><i></i></div>
+        <div class="cc-top"></div>
+        <div class="cc-base"></div>
+      </div>
+      <h1 class="cover-script">Happy Birthday <span class="hh">♥</span></h1>
+      <button class="c-open" onclick="go(1)">OPEN ♡</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 · ENVELOPE → TULIPS → LETTER ════════════════ -->
+<section class="slide s-env">
+  <span class="petal p1">🌷</span><span class="petal p2">🌸</span><span class="petal p3">🌷</span>
+  <div class="wrap">
+    <p class="env-kicker">a little something for you…</p>
+    <div class="env-layout">
+      <div class="env-polas">
+        <!-- ════════ 📸 PHOTO 2 ✅ ════════ -->
+        <div class="polaroid ep1"><img src="https://user42725.na.imgto.link/public/20261009/0121838db9ab5fe75cc7a6da-1000176004.avif" alt=""></div>
+        <!-- ════════ 📸 PHOTO 3 ✅ ════════ -->
+        <div class="polaroid ep2"><img src="https://user42725.na.imgto.link/public/20261009/fdde6eac06b6e5411e39e9dd-1000176003.avif" alt=""></div>
+        <!-- ════════ 📸 PHOTO 4 ✅ ════════ -->
+        <div class="polaroid ep3"><img src="https://user42725.na.imgto.link/public/20261009/87065460a74a0d843dca3b34-1000176002.avif" alt=""></div>
+      </div>
+      <div class="env-right">
+        <div class="e2-scene" id="envScene">
+          <div class="e2-arch"></div>
+          <div class="e2-glow"></div>
+          <div class="tulips">
+            <div class="tulip" style="--x:9%;--h:54px;--r:-26deg;--s:.8;--d:.55s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:23%;--h:84px;--r:-16deg;--s:.9;--d:.4s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:37%;--h:114px;--r:-7deg;--s:1;--d:.25s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:50%;--h:130px;--r:0deg;--s:1.05;--d:.1s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:63%;--h:114px;--r:7deg;--s:1;--d:.3s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:77%;--h:84px;--r:16deg;--s:.9;--d:.45s"><div class="t-head"></div><div class="t-stem"></div></div>
+            <div class="tulip" style="--x:91%;--h:54px;--r:26deg;--s:.8;--d:.6s"><div class="t-head"></div><div class="t-stem"></div></div>
+          </div>
+          <div class="e2-front"></div>
+          <div class="e2-seal">🤍</div>
+        </div>
+        <p class="env-hint" id="envHint">tap the envelope 💌</p>
+      </div>
+    </div>
+
+    <div class="letter-zone" id="letterZone">
+      <p class="turn-line">you're turn <b class="js-age">15</b>, Darling!</p>
+      <div class="letter-card">
+        <!-- ════════ ✏️ LETTER — your message below ════════ -->
+        <h3>To Someone Who Means More Than Words Can Say 🎂</h3>
+        <p>Happy birthday, Darling. ♡ May this new chapter bring you closer to your dreams, fill your days with little joys, and give your heart countless reasons to smile.</p>
+        <p>I hope life will always be gentle with you, even on the days when things don't go as planned. May you find comfort in knowing that brighter days are always worth waiting for.</p>
+        <p>Thank you for being someone whose presence makes ordinary moments feel a little more special. You may not always realize it, but you make this world a little warmer just by being in it.</p>
+        <p>As you grow another year older, I hope you never lose the little things that make you who you are. Keep dreaming, keep growing, and always remember that you don't have to have everything figured out to be enough.</p>
+        <p>Whatever this year brings, I hope it gives you beautiful memories, genuine happiness, and people who remind you how much you matter. You deserve a life filled with love that feels safe and moments that feel like home.</p>
+        <p>Happy birthday, once again. May you always find your way back to happiness, even after the hardest days. I'm truly glad that someone like you exists. ♡</p>
+        <div class="sign">— <span class="js-from">your beloved one, Alvaro</span></div>
+      </div>
+      <button class="next-btn" onclick="go(2)">Next &gt;&gt;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 · A GLIMPSE OF YOU ════════════════ -->
+<section class="slide s-mem">
+  <div class="wrap">
+    <h2 class="glimpse-title"><span class="script">A Glimpse of</span> <b>You</b></h2>
+
+    <!-- pure CSS camera shape — tap it for a flash! -->
+    <div class="camera" id="camera" title="tap to take a picture">
+      <div class="cam-top">
+        <div class="cam-shutter"></div>
+        <div class="cam-reel"></div>
+        <div class="cam-hump"></div>
+        <div class="cam-view"></div>
+      </div>
+      <div class="cam-body">
+        <span class="cam-screw s1"></span><span class="cam-screw s2"></span>
+        <span class="cam-screw s3"></span><span class="cam-screw s4"></span>
+        <div class="cam-lens"></div>
+        <div class="cam-side">
+          <div class="cam-flashwin"></div>
+          <div class="cam-dial"></div>
+          <div class="cam-dots"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+      <div class="cam-label">tap to take a picture 📸</div>
+    </div>
+
+    <div class="mem-row">
+      <!-- ════════ 📸 PHOTO 5 ✅ (position 1, left) ════════ -->
+      <figure class="polaroid"><img src="https://user42725.na.imgto.link/public/20261009/9b1845f72e9b59f0bc1f0670-1000176112.avif" alt=""><figcaption>Little you ✨</figcaption></figure>
+      <!-- ════════ 📸 PHOTO 6 ✅ (position 2) ════════ -->
+      <figure class="polaroid"><img src="https://user42725.na.imgto.link/public/20261009/b31ebc80923532c82be214b9-1000175749.avif" alt=""><figcaption>endless smile 🫧</figcaption></figure>
+      <!-- ════════ 📸 PHOTO 7 ✅ (position 3) ════════ -->
+      <figure class="polaroid"><img src="https://user42725.na.imgto.link/public/20261009/0b9f03b89f0d1e5a19e03b42-1000175991.avif" alt=""><figcaption>beach 🏖</figcaption></figure>
+      <!-- ════════ 📸 PHOTO 8 ✅ (position 4) ════════ -->
+      <figure class="polaroid"><img src="https://user42725.na.imgto.link/public/20261009/505ad7f3285787d1ea606d06-1000175746.avif" alt=""><figcaption>parrots 🦜</figcaption></figure>
+      <!-- ════════ 📸 PHOTO 9 ✅ (position 5) — face-fit: whole photo shown, face visible -->
+      <figure class="polaroid face-fit"><img src="https://cdn.phototourl.com/member/2026-10-09-6b7580be-3f54-41ed-8e51-db508ea9bee9.jpg" alt=""><figcaption>my favorite 💗</figcaption></figure>
+    </div>
+    <p class="mem-text">Some photos of you I've secretly <em>collected</em> and <em>admired</em> — hehe~! 💕</p>
+    <button class="next-btn btn-rose" onclick="go(3)">Next &gt;&gt;</button>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 · A SONG FOR YOU (hybrid: direct link → LimeWire → melody) ════════════════ -->
+<section class="slide s-song">
+  <div class="song-deco sd-vinyl1"></div>
+  <div class="song-deco sd-vinyl2"></div>
+  <div class="sd-red"></div>
+  <svg class="flower fl-red" viewBox="0 0 100 100" aria-hidden="true">
+    <g fill="#a8443c" stroke="#7e2d27" stroke-width="1">
+      <ellipse cx="50" cy="24" rx="9" ry="23"/>
+      <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(60 50 50)"/>
+      <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(120 50 50)"/>
+      <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(240 50 50)"/>
+      <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(300 50 50)"/>
+    </g>
+    <circle cx="50" cy="50" r="8" fill="#d98a3f"/>
+  </svg>
+
+  <div class="wrap">
+    <p class="song-kicker">a song only for you</p>
+    <p class="song-sub" id="songSub">♪ …</p>
+
+    <div class="yt-wrap">
+      <svg class="flower fl-white" viewBox="0 0 100 100" aria-hidden="true">
+        <g fill="#fdfaf2" stroke="#e8e2d2" stroke-width="1">
+          <ellipse cx="50" cy="24" rx="9" ry="23"/>
+          <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(60 50 50)"/>
+          <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(120 50 50)"/>
+          <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(180 50 50)"/>
+          <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(240 50 50)"/>
+          <ellipse cx="50" cy="24" rx="9" ry="23" transform="rotate(300 50 50)"/>
+        </g>
+        <g stroke="#d8b13f" stroke-width="1.4">
+          <line x1="50" y1="50" x2="43" y2="32"/><line x1="50" y1="50" x2="57" y2="32"/>
+          <line x1="50" y1="50" x2="37" y2="45"/><line x1="50" y1="50" x2="63" y2="45"/>
+        </g>
+        <circle cx="50" cy="50" r="8" fill="#f3c14b"/>
+      </svg>
+      <span class="star st1"></span><span class="star st2"></span>
+
+      <!-- music card: tries CONFIG.songUrl first; if it can't play,
+           falls back to the built-in Birthday Melody (always works!) -->
+      <div class="song-card" onclick="toggleSong(event)">
+        <img id="songPoster" src="" alt="album cover" onerror="this.style.display='none';document.getElementById('songFallback').style.display='grid'">
+        <div class="song-fallback" id="songFallback">🎵</div>
+        <p class="yt-hint" id="songHint">tap to play</p>
+        <button class="yt-play" id="songPlayBtn">▶</button>
+        <p class="song-title-overlay" id="songOverlay">…</p>
+        <div class="song-progress"><div id="songBar"></div></div>
+      </div>
+      <span class="song-note" id="songNote"></span>
+    </div>
+
+    <div class="tt-wrap">
+      <div class="plaid"></div>
+      <div class="turntable" id="turntable" title="tap to spin / stop">
+        <div class="tt-body">
+          <div class="platter">
+            <div class="vinyl" id="vinyl">
+              <!-- ════════ 📸 PHOTO 10–12 — spinning vinyl photos
+                   Set them in CONFIG.vinylPhotos (bottom of this file). -->
+              <img class="vphoto" id="vphotoA" src="" alt="">
+              <img class="vphoto" id="vphotoB" src="" alt="">
+              <span class="spindle"></span>
+            </div>
+          </div>
+          <div class="tonearm" id="tonearm"></div>
+          <div class="tt-knob k1"></div><div class="tt-knob k2"></div><div class="tt-knob k3"></div>
+          <div class="tt-slider"></div>
+        </div>
+        <div class="now-spinning" id="spinLabel">now spinning…</div>
+      </div>
+      <div class="side-polas">
+        <!-- ════════ 📸 PHOTO 13 ════════ -->
+        <figure class="spolar sp1"><img src="https://picsum.photos/seed/sp1/200/200" alt=""></figure>
+        <!-- ════════ 📸 PHOTO 14 ════════ -->
+        <figure class="spolar sp2"><img src="https://picsum.photos/seed/sp2/200/200" alt=""></figure>
+      </div>
+    </div>
+
+    <button class="last-part" onclick="go(4)">Last part &gt;&gt;</button>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 5 · FINALE — HEART (10 photos) ════════════════ -->
+<section class="slide s-final">
+  <div class="floaties"><span>💗</span><span>🤍</span><span>✨</span><span>💗</span><span>✨</span><span>🤍</span></div>
+  <div class="wrap">
+    <h2 class="final-title">Happy Birthday, <span class="js-name">…</span>!</h2>
+    <div class="heart-collage">
+      <svg class="heart-glow" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50 88 C20 65 5 45 5 28 C5 12 18 5 30 5 C40 5 47 11 50 18 C53 11 60 5 70 5 C82 5 95 12 95 28 C95 45 80 65 50 88Z" fill="#f7a8c4"/>
+      </svg>
+      <div class="dip">💗</div>
+      <!-- row 1 (top lobes) -->
+      <!-- ════════ 📸 PHOTO 15 ✅ ════════ -->
+      <div class="hcard" style="--i:0;--r:-8deg;left:8%;top:0"><img src="https://cdn.phototourl.com/member/2026-10-09-7aec1e08-e887-4128-ba12-022ff5c4e701.jpg" alt=""></div>
+      <!-- ════════ 📸 PHOTO 16 ✅ ════════ -->
+      <div class="hcard" style="--i:1;--r:8deg;left:63%;top:0"><img src="https://cdn.phototourl.com/member/2026-10-09-85f12b54-dbcb-4b83-b30b-55a712b7b726.jpg" alt=""></div>
+      <!-- row 2 -->
+      <!-- ════════ 📸 PHOTO 17 ✅ ════════ -->
+      <div class="hcard" style="--i:2;--r:-3deg;left:0;top:20%"><img src="https://cdn.phototourl.com/member/2026-10-09-1a5e8f55-544e-4c21-b967-48f53299c712.jpg" alt=""></div>
+      <!-- ════════ 📸 PHOTO 18 ✅ ════════ -->
+      <div class="hcard" style="--i:3;--r:2deg;left:34.5%;top:18.5%"><img src="https://cdn.phototourl.com/member/2026-10-09-6d9e24da-0b02-4b67-9287-ad380c51872f.jpg" alt=""></div>
+      <!-- ════════ 📸 PHOTO 19 ✅ ════════ -->
+      <div class="hcard" style="--i:4;--r:3deg;left:69%;top:20%"><img src="https://cdn.phototourl.com/member/2026-10-09-20179c90-5008-4e0d-8849-0b1100aa539a.jpg" alt=""></div>
+      <!-- row 3 -->
+      <!-- ════════ 📸 PHOTO 20 ✅ ════════ -->
+      <div class="hcard" style="--i:5;--r:3deg;left:17%;top:40%"><img src="https://cdn.phototourl.com/member/2026-10-09-98c45295-a546-4074-90d3-e521dd2286d9.jpg" alt=""></div>
+      <!-- ════════ 📸 PHOTO 21 ✅ ════════ -->
+      <div class="hcard" style="--i:6;--r:-3deg;left:52%;top:40%"><img src="https://cdn.phototourl.com/member/2026-10-09-cce13553-203c-4d76-8935-74d2f037e7bd.jpg" alt=""></div>
+      <!-- row 4 -->
+      <!-- ════════ 📸 PHOTO 22 ✅ ════════ -->
+      <div class="hcard" style="--i:7;--r:-4deg;left:26%;top:58%"><img src="https://cdn.phototourl.com/member/2026-10-09-f435656f-7a23-4bec-b74b-fcfa78c2612e.jpg" alt=""></div>
+      <!-- ════════ 📸 PHOTO 23 ✅ ════════ -->
+      <div class="hcard" style="--i:8;--r:3deg;left:47.5%;top:59.5%"><img src="https://cdn.phototourl.com/member/2026-10-09-3b9a917b-e02d-43ff-a8fa-aebcd89b07be.jpg" alt=""></div>
+      <!-- tip -->
+      <!-- ════════ 📸 PHOTO 24 ✅ ════════ -->
+      <div class="hcard" style="--i:9;--r:2deg;left:36.5%;top:76%"><img src="https://user42725.na.imgto.link/public/20261009/24ddd27975f256b0a12e30d4-1000175740.avif" alt=""></div>
+    </div>
+    <!-- ✏️ closing note -->
+    <p class="final-note">You're fifteen and getting old now &lt;3, and if there's one thing I hope you never outgrow, it's the little things that make you who you are. I hope life is kind to you, even on the days when you struggle to be kind to yourself. May this year bring you closer to your dreams, give you reasons to smile when you least expect them, and remind you that even on the days when you feel like you're not doing enough, you're still becoming someone worth being proud of. And when you look back on being fifteen someday, I hope you'll remember it as a year that was good to you. 🤍🎂</p>
+    <button class="btn-ghost" onclick="replay()">↺ replay from the start</button>
+    <p class="made">made with 🤍 just for you</p>
+  </div>
+</section>
+
+<canvas id="confetti"></canvas>
+<div id="flash"></div>
+<div id="toast"></div>
+<button class="fab" id="fab" title="play / pause music">🎵</button>
+
+<script>
+/* ============ ⚙️ CONFIG — ✏️ EDIT THIS ============ */
+const CONFIG = {
+  name: "Darling",                                       // ✏️ her name (finale title)
+  age: 15,                                               // ✏️ her new age
+  from: "your beloved one, Alvaro",                      // ✏️ your signature on the letter
+  songTitle: "Sleeping on the Blacktop — Colter Wall",   // ✏️ shown on the music card
+  poster: "",                                            // ✏️ optional: direct image URL for the album art
+
+  // ✏️ 🎵 SONG SOURCE (priority order):
+  //    1. songUrl   → a DIRECT audio/video file link (.mp3/.mp4/.m4a/.ogg)
+  //                   Must END with the file extension — LimeWire share pages won't work.
+  //    2. If it fails or is empty → the built-in Birthday Melody plays (always works!)
+  songUrl: "https://limewire.com/d/t2aeQ#lX5aoCTUh0",    // ⚠️ this is a share PAGE, likely won't autoplay
+
+  // ✏️ 📸 photos that cycle on the spinning vinyl while the song plays
+  vinylPhotos: [
+    "https://picsum.photos/seed/vinyl1/500/500",
+    "https://picsum.photos/seed/vinyl2/500/500",
+    "https://picsum.photos/seed/vinyl3/500/500",
+  ],
+};
+/* ================================================== */
+
+document.querySelectorAll(".js-name").forEach(el => el.textContent = CONFIG.name);
+document.querySelectorAll(".js-age").forEach(el => el.textContent = CONFIG.age);
+document.querySelectorAll(".js-from").forEach(el => el.textContent = CONFIG.from);
+document.getElementById("songSub").textContent = CONFIG.songTitle + " · tap ▶ — the vinyl spins along 🎶";
+document.getElementById("songOverlay").textContent = CONFIG.songTitle;
+if(CONFIG.poster) document.getElementById("songPoster").src = CONFIG.poster;
+else document.getElementById("songPoster").style.display = "none",
+     document.getElementById("songFallback").style.display = "grid";
+
+// ---------- slide navigation ----------
+const slides = [...document.querySelectorAll(".slide")];
+function go(n){
+  slides.forEach((s,i) => s.classList.toggle("active", i === n));
+  const cur = slides[n];
+  if(cur) cur.scrollTop = 0;
+  if(n === slides.length - 1) celebrate();
+}
+
+// ---------- cover: image + CSS-art fallback ----------
+const coverCard  = document.getElementById("coverCard");
+const coverScene = document.getElementById("coverScene");
+coverCard.addEventListener("click", () => go(1));
+coverScene.addEventListener("click", () => go(1));
+document.getElementById("coverImg").addEventListener("error", () => {
+  coverCard.style.display = "none";
+  coverScene.style.display = "block";
+});
+
+// ---------- envelope → tulips bloom → letter ----------
+const envScene = document.getElementById("envScene");
+const envHint = document.getElementById("envHint");
+const letterZone = document.getElementById("letterZone");
+envScene.addEventListener("click", () => {
+  if(envScene.classList.contains("bloomed")) return;
+  envScene.classList.add("bloomed");
+  envHint.textContent = "happy 15th, Darling 🎂";
+  setTimeout(() => {
+    letterZone.classList.add("revealed");
+    setTimeout(() => letterZone.scrollIntoView({behavior:"smooth", block:"start"}), 420);
+  }, 1250);
+});
+
+// ---------- camera: tap = flash + wiggle ----------
+const camEl = document.getElementById("camera");
+const flashEl = document.getElementById("flash");
+camEl.addEventListener("click", () => {
+  flashEl.classList.remove("go"); void flashEl.offsetWidth;
+  flashEl.classList.add("go");
+  camEl.classList.remove("snapped"); void camEl.offsetWidth;
+  camEl.classList.add("snapped");
+  toast("say cheese! 📸");
+});
+
+/* ============================================================
+   SONG ENGINE — hybrid:
+   A) If CONFIG.songUrl is a direct audio/video file → play it
+   B) If it fails / is a share page → built-in Birthday Melody
+      (Web Audio API — no files needed, always works!)
+   ============================================================ */
+const bgm = new Audio();
+bgm.loop = true;
+bgm.preload = "auto";
+if(CONFIG.songUrl) bgm.src = CONFIG.songUrl;
+
+let melodyPlaying = false, melodyTimers = [];
+let spinning = false;
+
+const playBtn = document.getElementById("songPlayBtn");
+const hintEl  = document.getElementById("songHint");
+const noteEl  = document.getElementById("songNote");
+const barEl   = document.getElementById("songBar");
+
+function updateUI(playing, label){
+  playBtn.textContent = playing ? "⏸" : "▶";
+  hintEl.textContent  = playing ? "tap to pause" : "tap to play";
+  spinning = playing;
+  renderSpin();
+}
+bgm.addEventListener("play",  () => updateUI(true,  "song"));
+bgm.addEventListener("pause", () => updateUI(false, "song"));
+bgm.addEventListener("error", () => {
+  // LimeWire share pages / blocked links land here → switch to melody mode
+  bgm.removeAttribute("src");
+  noteEl.innerHTML = "⚠️ can't play the direct link — <b>tap ▶ for the Birthday Melody ♪</b>";
+});
+
+function toggleSong(e){
+  if(e) e.stopPropagation();
+  if(melodyPlaying){ stopMelody(); return; }
+  if(bgm.src && !bgm.dataset.failed){
+    bgm.play().catch(() => {
+      bgm.dataset.failed = "1";
+      startMelody();            // direct link failed → melody!
+    });
+  } else {
+    startMelody();
+  }
+}
+playBtn.addEventListener("click", toggleSong);
+
+/* ---- built-in Birthday Melody (Web Audio, no files!) ---- */
+// notes of "Happy Birthday" (freq Hz, beats)
+const MELODY = [
+  [392,.5],[392,.25],[440,1],[392,1],[523.25,1],[493.88,2],
+  [392,.5],[392,.25],[440,1],[392,1],[587.33,1],[523.25,2],
+  [392,.5],[392,.25],[783.99,1],[659.25,1],[523.25,1],[493.88,1],[440,2],
+  [698.46,.5],[698.46,.25],[659.25,1],[523.25,1],[587.33,1],[523.25,2]
+];
+function startMelody(){
+  melodyPlaying = true;
+  updateUI(true, "melody");
+  noteEl.textContent = "♪ Birthday Melody (built-in, always plays!) ♪";
+  const ctx = melodyCtx = melodyCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if(ctx.state === "suspended") ctx.resume();
+  let t = ctx.currentTime + .1;
+  MELODY.forEach(([f,b]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "triangle"; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(.22, t + .03);
+    g.gain.exponentialRampToValueAtTime(.0001, t + b * .5);
+    o.connect(g).connect(ctx.destination);
+    o.start(t); o.stop(t + b * .5 + .05);
+    t += b * .5;
+  });
+  const total = (t - ctx.currentTime) * 1000;
+  melodyTimers.push(setTimeout(startMelody, total + 1200)); // loop the melody
+}
+let melodyCtx = null;
+function stopMelody(){
+  melodyPlaying = false;
+  melodyTimers.forEach(clearTimeout); melodyTimers = [];
+  if(melodyCtx){ melodyCtx.close(); melodyCtx = null; }
+  updateUI(false, "melody");
+  noteEl.textContent = "";
+}
+
+// ---------- spinning vinyl with cycling photos ----------
+const vinylEl  = document.getElementById("vinyl");
+const tonearmEl = document.getElementById("tonearm");
+const spinLabel = document.getElementById("spinLabel");
+const vA = document.getElementById("vphotoA");
+const vB = document.getElementById("vphotoB");
+const vPhotos = (CONFIG.vinylPhotos && CONFIG.vinylPhotos.length)
+  ? CONFIG.vinylPhotos
+  : ["https://picsum.photos/seed/vinyl1/500/500"];
+
+let vIdx = 0, vActive = vA, cycleT = null;
+vA.src = vPhotos[0]; vA.classList.add("show");
+
+function nextPhoto(){
+  if(vPhotos.length < 2) return;
+  vIdx = (vIdx + 1) % vPhotos.length;
+  const incoming = (vActive === vA) ? vB : vA;
+  incoming.onload = () => {
+    incoming.classList.add("show");
+    vActive.classList.remove("show");
+    vActive = incoming;
+  };
+  incoming.src = vPhotos[vIdx];
+}
+function startCycle(){ if(cycleT || vPhotos.length < 2) return; cycleT = setInterval(nextPhoto, 3800); }
+function stopCycle(){ clearInterval(cycleT); cycleT = null; }
+
+function renderSpin(){
+  vinylEl.classList.toggle("spin", spinning);
+  tonearmEl.classList.toggle("on", spinning);
+  spinLabel.textContent = spinning ? "♪ now spinning ♪" : "now spinning…";
+  spinning ? startCycle() : stopCycle();
+}
+// tap the turntable to spin/stop manually
+document.getElementById("turntable").addEventListener("click", () => {
+  if(melodyPlaying || !bgm.paused){        // stop whatever is playing
+    if(melodyPlaying) stopMelody(); else bgm.pause();
+    spinning = false; renderSpin();
+  } else {                                  // start
+    toggleSong();
+  }
+});
+// floating fab: same toggle
+document.getElementById("fab").addEventListener("click", () => toggleSong());
+
+// fake progress bar for the melody loop (so the card feels alive)
+setInterval(() => {
+  if(melodyPlaying){
+    const w = parseFloat(barEl.style.width) || 0;
+    barEl.style.width = ((w + 1.5) % 100) + "%";
+  } else if(!bgm.paused && bgm.duration){
+    barEl.style.width = ((bgm.currentTime / bgm.duration) * 100) + "%";
+  }
+}, 300);
+
+// ---------- confetti ----------
+const cvs = document.getElementById("confetti");
+const ctx = cvs.getContext("2d");
+function sizeC(){ cvs.width = innerWidth; cvs.height = innerHeight; }
+sizeC(); addEventListener("resize", sizeC);
+let parts = [], raf = null;
+function burst(mult = 2){
+  const colors = ["#f7a8c4","#ffd6e0","#ffffff","#e8b04b","#c96f6f","#a7c4e2"];
+  for(let i = 0; i < Math.round(130 * mult); i++){
+    parts.push({
+      x: innerWidth/2 + (Math.random()-.5)*innerWidth*.5,
+      y: innerHeight*.42,
+      vx: (Math.random()-.5)*12, vy: -(Math.random()*12+6),
+      s: Math.random()*7+4, c: colors[i%colors.length],
+      r: Math.random()*6, vr: (Math.random()-.5)*.3, life: 0
+    });
+  }
+  if(!raf) tick();
+}
+function tick(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  parts = parts.filter(p => p.life < 240 && p.y < cvs.height + 50);
+  parts.forEach(p => {
+    p.life++; p.vy += .22; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+    ctx.globalAlpha = Math.max(0, 1 - p.life/240);
+    ctx.fillStyle = p.c;
+    ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*.62);
+    ctx.restore();
+  });
+  raf = parts.length ? requestAnimationFrame(tick) : (ctx.clearRect(0,0,cvs.width,cvs.height), null);
+}
+function celebrate(){ burst(2.2); setTimeout(() => burst(1.2), 700); }
+
+// ---------- helpers ----------
+let toastT;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600);
+}
+function replay(){ location.reload(); }
+</script>
+</body>
+</html>
